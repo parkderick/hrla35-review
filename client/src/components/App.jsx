@@ -1,40 +1,65 @@
 import React from 'react';
+import axios from 'axios';
+import Poke from './Poke';
 
-const App = () => (
-  <div>
-    <div>
-      <h1>Pokemon!</h1>
-      <button>Show All</button>
-      <select id="type">
-        <option>Sort by Type</option>
-        <option>Grass</option>
-        <option>Fire</option>
-        <option>Water</option>
-        <option>Normal</option>
-        <option>Poison</option>
-        <option>Electric</option>
-        <option>Ground</option>
-        <option>Fighting</option>
-        <option>Psychic</option>
-        <option>Rock</option>
-        <option>Ghost</option>
-        <option>Dragon</option>
-      </select>
-      <button>INSERT</button>
+class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      pokemons: []
+    }
+    this.handleChange = this.handleChange.bind(this)
+  }
+  componentDidMount() {
+    axios.get('/pokemons')
+    .then(({data}) => {
+      console.log(data);
+      this.setState({pokemons: data})
+    })
+    .catch(() => console.log('Failed to retrieve pokemons'))
+  }
+
+  handleChange(e) {
+    if (e.target.value === 'none') {
+      axios.get('/pokemons')
+      .then(({data}) => this.setState({pokemons: data}))
+      .catch(() => console.log('Failed to retrieve pokemons'))
+    } else {
+      axios.get(`/pokemons/${e.target.value}`)
+      .then(({data}) => this.setState({pokemons: data}))
+      .catch(() => console.log('Failed to retrieve pokemons'))
+    }
+  }
+
+  
+
+  render() {
+    return (
       <div>
-        <h3>Bulbasaur</h3>
-        <img src="http://vignette4.wikia.nocookie.net/nintendo/images/4/43/Bulbasaur.png/revision/latest?cb=20141002083518&path-prefix=en"/>
+        <h1>Pokemon!</h1>
+        <button>Show All</button>
+        <select onChange={e => this.handleChange(e)}>
+          <option value="none">Sort by Type</option>
+          <option value="Grass">Grass</option>
+          <option value="Fire">Fire</option>
+          <option value="Water">Water</option>
+          <option value="Normal">Normal</option>
+          <option value="Poison">Poison</option>
+          <option value="Electric">Electric</option>
+          <option value="Ground">Ground</option>
+          <option value="Fighting">Fighting</option>
+          <option value="Psychic">Psychic</option>
+          <option value="Rock">Rock</option>
+          <option value="Ghost">Ghost</option>
+          <option value="Dragon">Dragon</option>
+        </select>
+        <button>INSERT</button>
+      {this.state.pokemons.map((pokemon, index) => (
+        <Poke key={index} name={pokemon.name} img={pokemon.img}/>
+      ))}
       </div>
-      <div>
-        <h3>Ivysaur</h3>
-        <img src="http://vignette3.wikia.nocookie.net/nintendo/images/8/86/Ivysaur.png/revision/latest?cb=20141002083450&path-prefix=en"/>
-      </div>
-      <div>
-        <h3>Venusaur</h3>
-        <img src="http://vignette2.wikia.nocookie.net/nintendo/images/b/be/Venusaur.png/revision/latest?cb=20141002083423&path-prefix=en"/>
-      </div>
-    </div>
-  </div>
-)
+    )
+  }
+}
 
 export default App;

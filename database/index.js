@@ -8,7 +8,6 @@ mongoose.connect('mongodb://localhost/pokemon', {useNewUrlParser: true})
   console.log(`Error connecting to database ${err.message}`)
 })
 
-
 var Schema = new mongoose.Schema({
   id: String, 
   name: String,
