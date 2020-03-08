@@ -6,23 +6,32 @@ class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      pokemons: []
+      pokemons: [],
+      newPokemon: ''
     }
-    this.handleChange = this.handleChange.bind(this)
+    this.insertPokemon = this.insertPokemon.bind(this);
+    this.searchType = this.searchType.bind(this);
+    this.retrieveData = this.retrieveData.bind(this);
   }
   componentDidMount() {
+    this.retrieveData()
+  }
+
+  retrieveData() {
     axios.get('/pokemons')
     .then(({data}) => {
       console.log(data);
       this.setState({pokemons: data})
     })
+    .then(() => console.log('Success retrieving pokemon'))
     .catch(() => console.log('Failed to retrieve pokemons'))
   }
 
-  handleChange(e) {
+  searchType(e) {
     if (e.target.value === 'none') {
       axios.get('/pokemons')
       .then(({data}) => this.setState({pokemons: data}))
+      .then(() => console.log('Success retrieving pokemon for type'))
       .catch(() => console.log('Failed to retrieve pokemons'))
     } else {
       axios.get(`/pokemons/${e.target.value}`)
@@ -31,14 +40,21 @@ class App extends React.Component {
     }
   }
 
-  
+  insertPokemon() {
+    axios.post('/pokemons', {
+      name: this.state.newPokemon
+    })
+      .then(() => this.retrieveData())
+      .then(() => console.log('Success posting pokemon'))
+      .catch(() => console.log('Failed posting pokemon'))
+  }
 
   render() {
     return (
       <div>
         <h1>Pokemon!</h1>
         <button>Show All</button>
-        <select onChange={e => this.handleChange(e)}>
+        <select onChange={e => this.searchType(e)}>
           <option value="none">Sort by Type</option>
           <option value="Grass">Grass</option>
           <option value="Fire">Fire</option>
@@ -53,9 +69,10 @@ class App extends React.Component {
           <option value="Ghost">Ghost</option>
           <option value="Dragon">Dragon</option>
         </select>
-        <button>INSERT</button>
+        <input onChange={e => this.setState({newPokemon: e.target.value})} placholder="Enter New Pokemon Here"/>
+        <button onClick={this.insertPokemon}>INSERT</button>
       {this.state.pokemons.map((pokemon, index) => (
-        <Poke key={index} name={pokemon.name} img={pokemon.img}/>
+        <Poke key={index} pokemon={pokemon} retrieveData={this.retrieveData}/>
       ))}
       </div>
     )

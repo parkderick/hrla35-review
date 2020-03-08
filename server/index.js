@@ -25,3 +25,22 @@ app.get('/pokemons/:id', (req, res) => {
   .catch(() => res.status(404).send(`ERROR retrieving pokemons for type ${req.params.id}`))
 })
   
+app.put('/pokemons/:id', (req, res) => {
+  dbHelper.updateName(req)
+  .then((data) => res.status(200).send(`Success updating pokemons for id ${req.params.id}`))
+  .catch(() => res.status(404).send(`ERROR updating pokemons for id ${req.params.id}`))
+})
+  
+app.delete('/pokemons/:id', (req, res) => {
+  dbHelper.deletePokemon(req)
+  .then(() => res.status(200).send(`Success updating pokemons for id ${req.params.id}`))
+  .catch(() => res.status(404).send(`ERROR updating pokemons for id ${req.params.id}`))
+})
+
+app.post('/pokemons', (req, res) => {
+  dbHelper.postPokemon(req)
+  .then(() => res.status(200).send(`Success posting pokemons for id ${req.params.id}`))
+  .catch(() => res.status(404).send(`ERROR posting pokemons for id ${req.params.id}`))
+})
+  
+  
